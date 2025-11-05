@@ -1,48 +1,59 @@
 <template>
-   <div class="container">
-    <h1>WebSocket Chat</h1>
-    <h2>Status: {{ status }}</h2>
+  <div class="app-wrapper">
+    <Aurora
+      :colorStops="['#676cff', '#171D22', '#676cff']"
+      :amplitude="1.5"
+      :blend="0.8"
+      :speed="0.8"
+      :intensity="0.6"
+      class="aurora-background"
+    />
+    <div class="container">
+      <h1>WebSocket Chat</h1>
+      <h2>Status: {{ status }}</h2>
 
-    <div v-if="!username" class="name-prompt">
-      <input
-        v-model="nameInput"
-        @keyup.enter="setUsername"
-        placeholder="Enter your name..."
-        class="input"
-      />
-      <button @click="setUsername" class="button">Join Chat</button>
-    </div>
-
-    <div v-else>
-      <div class="current-user">Chatting as: {{ username }}</div>
-
-      <div class="chat-box">
-        <div
-          v-for="(msg, i) in messages"
-          :key="i"
-          :class="{
-            'system-message': msg.type === 'system',
-            'message': msg.type === 'message' && !msg.isOwn,
-            'message-own': msg.type === 'message' && msg.isOwn
-          }"
-        >
-          {{ msg.text }}
-        </div>
+      <div v-if="!username" class="name-prompt">
+        <input
+          v-model="nameInput"
+          @keyup.enter="setUsername"
+          placeholder="Enter your name..."
+          class="input"
+        />
+        <button @click="setUsername" class="button">Join Chat</button>
       </div>
 
-      <input
-        v-model="input"
-        @keyup.enter="sendMessage"
-        placeholder="Type a message..."
-        class="input"
-      />
-      <button @click="sendMessage" class="button">Send</button>
+      <div v-else>
+        <div class="current-user">Chatting as: {{ username }}</div>
+
+        <div class="chat-box">
+          <div
+            v-for="(msg, i) in messages"
+            :key="i"
+            :class="{
+              'system-message': msg.type === 'system',
+              'message': msg.type === 'message' && !msg.isOwn,
+              'message-own': msg.type === 'message' && msg.isOwn
+            }"
+          >
+            {{ msg.text }}
+          </div>
+        </div>
+
+        <input
+          v-model="input"
+          @keyup.enter="sendMessage"
+          placeholder="Type a message..."
+          class="input"
+        />
+        <button @click="sendMessage" class="button">Send</button>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import Aurora from './components/Aurora.vue'
 
 interface Message {
   type: 'message' | 'system'
@@ -127,6 +138,24 @@ const sendMessage = () => {
 </script>
 
 <style scoped>
+.app-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+
+.aurora-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
 
 .container {
   max-width: 400px;
