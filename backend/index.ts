@@ -1,4 +1,5 @@
 import { WebSocketServer } from "ws";
+import { saveMessage, getRecentMessages } from "./db";
 
 const wss = new WebSocketServer({ port: 9000 });
 console.log("✅ WebSocket server running on ws://localhost:9000");
@@ -17,6 +18,14 @@ wss.on("connection", (ws) => {
       clients.set(ws, data.username);
       console.log(`${data.username} joined the chat`);
 
+      // Send message history to the joining client
+      const recentMessages = getRecentMessages(100);
+      const historyMsg = JSON.stringify({
+        type: 'history',
+        messages: recentMessages
+      });
+      ws.send(historyMsg);
+
       // Broadcast join message to all clients
       const joinMsg = JSON.stringify({
         type: 'join',
@@ -29,6 +38,9 @@ wss.on("connection", (ws) => {
         }
       });
     } else if (data.type === 'message') {
+      // Save message to database
+      saveMessage(data.username, data.text);
+
       // Broadcast regular message to all clients
       const messageData = JSON.stringify(data);
       clients.forEach((username, client) => {

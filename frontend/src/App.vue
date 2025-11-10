@@ -154,7 +154,16 @@ function connect() {
     const text = typeof event.data === 'string' ? event.data : await event.data.text()
     const data = JSON.parse(text)
 
-    if (data.type === 'join') {
+    if (data.type === 'history') {
+      // Load historical messages
+      data.messages.forEach((msg: { username: string; text: string }) => {
+        messages.value.push({
+          type: 'message',
+          text: `${msg.username}: ${msg.text}`,
+          isOwn: msg.username === username.value,
+        })
+      })
+    } else if (data.type === 'join') {
       messages.value.push({
         type: 'system',
         text: `${data.username} joined the chat`,
